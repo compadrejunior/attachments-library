@@ -4,6 +4,7 @@ import { SidecarManager } from './sidecar-manager';
 import { BackfillManager } from './backfill';
 import { BasesCreator } from './bases-creator';
 import { AttachmentsLibrarySettingsTab } from './settings';
+import { initI18n, t } from './i18n/i18n';
 
 export default class AttachmentsLibraryPlugin extends Plugin {
   settings: AttachmentsLibrarySettings;
@@ -13,6 +14,7 @@ export default class AttachmentsLibraryPlugin extends Plugin {
 
   async onload() {
     await this.loadSettings();
+    await initI18n();
 
     this.sidecarManager = new SidecarManager(this.app, this.settings);
     this.backfillManager = new BackfillManager(this.app, this.settings, this.sidecarManager);
@@ -28,13 +30,13 @@ export default class AttachmentsLibraryPlugin extends Plugin {
 
     this.addCommand({
       id: 'backfill-all',
-      name: 'Indexar todos os arquivos existentes (Backfill)',
+      name: t('commands.backfill'),
       callback: () => this.runBackfill(),
     });
 
     this.addCommand({
       id: 'create-sidecar-for-active',
-      name: 'Criar nota de metadados para o arquivo ativo',
+      name: t('commands.createSidecar'),
       checkCallback: (checking: boolean) => {
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) return false;

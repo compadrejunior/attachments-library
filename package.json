@@ -27,6 +27,7 @@
     "vitest": "^4.1.9"
   },
   "dependencies": {
+    "i18next": "^26.3.3",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.4.168"
   }

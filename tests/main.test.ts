@@ -2,6 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TFile, TAbstractFile } from 'obsidian';
 import { DEFAULT_SETTINGS } from '../src/types';
 
+vi.mock('../src/i18n/i18n', () => ({
+  initI18n: vi.fn().mockResolvedValue(undefined),
+  t: vi.fn((key: string) => key),
+}));
+
 // Shared mock instances — defined before vi.mock so factories can close over them
 const mockSidecarInstance = vi.hoisted(() => ({
   createSidecar: vi.fn(),

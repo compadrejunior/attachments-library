@@ -1,0 +1,102 @@
+{
+  "commands": {
+    "backfill": "Index all existing files (Backfill)",
+    "createSidecar": "Create metadata note for active file"
+  },
+  "settings": {
+    "heading": "Attachments Library — Settings",
+    "sections": {
+      "folders": "Folders",
+      "behavior": "Automatic Behavior",
+      "tagsProperty": "Tags Property",
+      "pdfMetadata": "PDF Metadata",
+      "actions": "Actions"
+    },
+    "attachmentsFolder": {
+      "name": "Attachments Folder",
+      "desc": "Monitored folder. Must match Obsidian's \"Default location for new attachments\".",
+      "placeholder": "Attachments"
+    },
+    "libraryFolder": {
+      "name": "Library Folder",
+      "desc": "Where metadata notes will be created.",
+      "placeholder": "Library"
+    },
+    "mirrorStructure": {
+      "name": "Mirror subfolder structure",
+      "desc": "When enabled, subfolders inside Attachments/ are replicated inside Library/."
+    },
+    "baseFolder": {
+      "name": "Base file folder (Bases)",
+      "desc": "Folder where \"Attachments Library.base\" will be created. Leave blank for vault root. After changing, click \"Move\" to move the existing file.",
+      "placeholder": "Vault root",
+      "moveBtn": "Move",
+      "movedBtn": "Moved!"
+    },
+    "autoCreate": {
+      "name": "Create note when file is added"
+    },
+    "autoDelete": {
+      "name": "Remove note when file is deleted",
+      "desc": "Moves the note to the system trash (reversible)."
+    },
+    "tagsPropertyName": {
+      "name": "Tags property name",
+      "desc": "Frontmatter field name used for tags. \"tags\" enables Obsidian's native tag chip UI. Changing this value does not rename the property in existing notes — use the button below.",
+      "placeholder": "tags"
+    },
+    "migrateTags": {
+      "name": "Rename property in existing notes",
+      "desc": "Renames a frontmatter field in all library notes, preserving values.",
+      "placeholder": "old name (e.g. keywords)",
+      "renameBtn": "Rename",
+      "doneBtn": "Done: {{count}} note(s) migrated"
+    },
+    "sanitizeTags": {
+      "name": "Sanitize tags in existing notes",
+      "desc": "Fixes invalid tags in library notes: replaces spaces with hyphens and removes characters not allowed by Obsidian.",
+      "btn": "Sanitize tags",
+      "doneBtn": "Done: {{count}} note(s) fixed"
+    },
+    "pdfExtraction": {
+      "name": "Extract embedded PDF metadata",
+      "desc": "Reads title, author, subject and keywords from PDF files locally, without internet."
+    },
+    "doiLookup": {
+      "name": "Online lookup via DOI/ISBN",
+      "desc": "Queries CrossRef (DOI) and OpenLibrary (ISBN). Free, no API key required."
+    },
+    "backfill": {
+      "name": "Index all existing files",
+      "desc": "Creates notes for all files in Attachments/ that don't have a note yet. Does not overwrite existing notes.",
+      "btn": "Run Backfill"
+    }
+  },
+  "backfill": {
+    "folderNotFound": "[Attachments Library] Folder \"{{folder}}\" not found.",
+    "starting": "[Attachments Library] Starting indexing of {{total}} files...",
+    "progress": "[Attachments Library] {{processed}}/{{total}} — {{created}} created, {{skipped}} already existed",
+    "complete": "[Attachments Library] ✅ Indexing complete: {{created}} notes created, {{skipped}} already existed."
+  },
+  "bases": {
+    "columns": {
+      "file": "File",
+      "title": "Title",
+      "author": "Author",
+      "subject": "Subject",
+      "genre": "Genre",
+      "status": "Status",
+      "tags": "Tags",
+      "source": "Source",
+      "createdAt": "Created",
+      "updatedAt": "Updated",
+      "type": "Type"
+    },
+    "views": {
+      "all": "All Attachments",
+      "unread": "Unread",
+      "reading": "Reading",
+      "pdfsOnly": "PDFs Only"
+    }
+  }
+}

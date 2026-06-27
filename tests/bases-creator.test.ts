@@ -2,6 +2,11 @@ import { describe, it, expect, vi } from 'vitest';
 import { BasesCreator } from '../src/bases-creator';
 import { DEFAULT_SETTINGS, AttachmentsLibrarySettings } from '../src/types';
 
+vi.mock('../src/i18n/i18n', () => ({
+  initI18n: vi.fn().mockResolvedValue(undefined),
+  t: vi.fn((key: string) => key),
+}));
+
 const BASE_NAME = 'Attachments Library.base';
 
 function makeApp(opts: {
@@ -133,10 +138,10 @@ describe('BasesCreator', () => {
       const creator = new BasesCreator(app as any, { ...settings, baseFolderPath: '' });
       await creator.createOrUpdateBaseFile();
       const content: string = (app.vault.create.mock.calls[0] as any[])[1];
-      expect(content).toContain('Todos os Anexos');
-      expect(content).toContain('Não Lidos');
-      expect(content).toContain('Em Leitura');
-      expect(content).toContain('Somente PDFs');
+      expect(content).toContain('bases.views.all');
+      expect(content).toContain('bases.views.unread');
+      expect(content).toContain('bases.views.reading');
+      expect(content).toContain('bases.views.pdfsOnly');
     });
 
     it('base file content includes all metadata properties', async () => {

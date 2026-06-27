@@ -9,7 +9,8 @@
     "importHelpers": true,
     "isolatedModules": true,
     "strictNullChecks": true,
-    "lib": ["ES6", "DOM"]
+    "lib": ["ES6", "DOM"],
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*.ts",

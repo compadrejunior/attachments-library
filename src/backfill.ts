@@ -1,6 +1,7 @@
 import { App, Notice } from 'obsidian';
 import { AttachmentsLibrarySettings } from './types';
 import { SidecarManager } from './sidecar-manager';
+import { t } from './i18n/i18n';
 
 export class BackfillManager {
   constructor(
@@ -15,7 +16,7 @@ export class BackfillManager {
     );
 
     if (!attachmentsFolder) {
-      new Notice(`[Attachments Library] Pasta "${this.settings.attachmentsFolder}" não encontrada.`);
+      new Notice(t('backfill.folderNotFound', { folder: this.settings.attachmentsFolder }));
       return;
     }
 
@@ -30,7 +31,7 @@ export class BackfillManager {
     let created = 0;
     let skipped = 0;
 
-    new Notice(`[Attachments Library] Iniciando indexação de ${total} arquivos...`);
+    new Notice(t('backfill.starting', { total }));
 
     for (let i = 0; i < allFiles.length; i += 10) {
       const batch = allFiles.slice(i, i + 10);
@@ -49,14 +50,12 @@ export class BackfillManager {
       }));
 
       if (processed % 50 === 0 || processed === total) {
-        new Notice(
-          `[Attachments Library] ${processed}/${total} — ${created} criados, ${skipped} já existiam`
-        );
+        new Notice(t('backfill.progress', { processed, total, created, skipped }));
       }
 
       await new Promise(resolve => setTimeout(resolve, 50));
     }
 
-    new Notice(`[Attachments Library] ✅ Indexação completa: ${created} notas criadas, ${skipped} já existiam.`);
+    new Notice(t('backfill.complete', { created, skipped }));
   }
 }

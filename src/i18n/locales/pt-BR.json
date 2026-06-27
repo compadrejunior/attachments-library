@@ -1,0 +1,102 @@
+{
+  "commands": {
+    "backfill": "Indexar todos os arquivos existentes (Backfill)",
+    "createSidecar": "Criar nota de metadados para o arquivo ativo"
+  },
+  "settings": {
+    "heading": "Attachments Library — Configurações",
+    "sections": {
+      "folders": "Pastas",
+      "behavior": "Comportamento Automático",
+      "tagsProperty": "Propriedade de Tags",
+      "pdfMetadata": "Metadados de PDF",
+      "actions": "Ações"
+    },
+    "attachmentsFolder": {
+      "name": "Pasta de Anexos",
+      "desc": "Pasta monitorada. Deve coincidir com \"Default location for new attachments\" do Obsidian.",
+      "placeholder": "Attachments"
+    },
+    "libraryFolder": {
+      "name": "Pasta da Biblioteca",
+      "desc": "Onde as notas de metadados serão criadas.",
+      "placeholder": "Library"
+    },
+    "mirrorStructure": {
+      "name": "Espelhar estrutura de subpastas",
+      "desc": "Se ativo, subpastas dentro de Attachments/ são replicadas em Library/."
+    },
+    "baseFolder": {
+      "name": "Pasta do arquivo base (Bases)",
+      "desc": "Pasta onde o arquivo \"Attachments Library.base\" será criado. Deixe em branco para a raiz do vault. Após alterar, clique em \"Mover\" para mover o arquivo existente.",
+      "placeholder": "Raiz do vault",
+      "moveBtn": "Mover",
+      "movedBtn": "Movido!"
+    },
+    "autoCreate": {
+      "name": "Criar nota ao adicionar arquivo"
+    },
+    "autoDelete": {
+      "name": "Remover nota ao deletar arquivo",
+      "desc": "Move a nota para a lixeira do sistema (reversível)."
+    },
+    "tagsPropertyName": {
+      "name": "Nome da propriedade de tags",
+      "desc": "Nome do campo frontmatter usado para tags. \"tags\" ativa a integração nativa do Obsidian (chips coloridos). Alterar este valor não renomeia propriedades em notas existentes — use o botão abaixo.",
+      "placeholder": "tags"
+    },
+    "migrateTags": {
+      "name": "Renomear propriedade em notas existentes",
+      "desc": "Renomeia um campo frontmatter em todas as notas da biblioteca, preservando os valores.",
+      "placeholder": "nome antigo (ex: keywords)",
+      "renameBtn": "Renomear",
+      "doneBtn": "Concluído: {{count}} nota(s) migrada(s)"
+    },
+    "sanitizeTags": {
+      "name": "Sanitizar tags em notas existentes",
+      "desc": "Corrige tags inválidas nas notas da biblioteca: substitui espaços por hífens e remove caracteres não permitidos pelo Obsidian.",
+      "btn": "Sanitizar tags",
+      "doneBtn": "Concluído: {{count}} nota(s) corrigida(s)"
+    },
+    "pdfExtraction": {
+      "name": "Extrair metadados embutidos em PDFs",
+      "desc": "Lê title, author, subject e keywords do arquivo PDF localmente, sem internet."
+    },
+    "doiLookup": {
+      "name": "Busca online via DOI/ISBN",
+      "desc": "Consulta CrossRef (DOI) e OpenLibrary (ISBN). Gratuito, sem API key necessária."
+    },
+    "backfill": {
+      "name": "Indexar todos os arquivos existentes",
+      "desc": "Cria notas para todos os arquivos em Attachments/ que ainda não têm nota. Não sobrescreve notas existentes.",
+      "btn": "Executar Backfill"
+    }
+  },
+  "backfill": {
+    "folderNotFound": "[Attachments Library] Pasta \"{{folder}}\" não encontrada.",
+    "starting": "[Attachments Library] Iniciando indexação de {{total}} arquivos...",
+    "progress": "[Attachments Library] {{processed}}/{{total}} — {{created}} criados, {{skipped}} já existiam",
+    "complete": "[Attachments Library] ✅ Indexação completa: {{created}} notas criadas, {{skipped}} já existiam."
+  },
+  "bases": {
+    "columns": {
+      "file": "Arquivo",
+      "title": "Título",
+      "author": "Autor",
+      "subject": "Tema",
+      "genre": "Gênero",
+      "status": "Status",
+      "tags": "Tags",
+      "source": "Fonte",
+      "createdAt": "Criado em",
+      "updatedAt": "Atualizado em",
+      "type": "Tipo"
+    },
+    "views": {
+      "all": "Todos os Anexos",
+      "unread": "Não Lidos",
+      "reading": "Em Leitura",
+      "pdfsOnly": "Somente PDFs"
+    }
+  }
+}

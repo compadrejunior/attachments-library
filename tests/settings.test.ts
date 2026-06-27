@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+vi.mock('../src/i18n/i18n', () => ({
+  initI18n: vi.fn().mockResolvedValue(undefined),
+  t: vi.fn((key: string) => key),
+}));
+
 const settingInstances = vi.hoisted<any[]>(() => []);
 
 vi.mock('obsidian', () => {

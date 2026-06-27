@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import type AttachmentsLibraryPlugin from './main';
+import { t } from './i18n/i18n';
 
 export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
   constructor(app: App, private plugin: AttachmentsLibraryPlugin) {
@@ -10,15 +11,15 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'Attachments Library — Configurações' });
+    containerEl.createEl('h2', { text: t('settings.heading') });
 
-    containerEl.createEl('h3', { text: 'Pastas' });
+    containerEl.createEl('h3', { text: t('settings.sections.folders') });
 
     new Setting(containerEl)
-      .setName('Pasta de Anexos')
-      .setDesc('Pasta monitorada. Deve coincidir com "Default location for new attachments" do Obsidian.')
+      .setName(t('settings.attachmentsFolder.name'))
+      .setDesc(t('settings.attachmentsFolder.desc'))
       .addText(text => text
-        .setPlaceholder('Attachments')
+        .setPlaceholder(t('settings.attachmentsFolder.placeholder'))
         .setValue(this.plugin.settings.attachmentsFolder)
         .onChange(async (value) => {
           this.plugin.settings.attachmentsFolder = value.trim() || 'Attachments';
@@ -26,10 +27,10 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         }));
 
     new Setting(containerEl)
-      .setName('Pasta da Biblioteca')
-      .setDesc('Onde as notas de metadados serão criadas.')
+      .setName(t('settings.libraryFolder.name'))
+      .setDesc(t('settings.libraryFolder.desc'))
       .addText(text => text
-        .setPlaceholder('Library')
+        .setPlaceholder(t('settings.libraryFolder.placeholder'))
         .setValue(this.plugin.settings.libraryFolder)
         .onChange(async (value) => {
           this.plugin.settings.libraryFolder = value.trim() || 'Library';
@@ -37,8 +38,8 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         }));
 
     new Setting(containerEl)
-      .setName('Espelhar estrutura de subpastas')
-      .setDesc('Se ativo, subpastas dentro de Attachments/ são replicadas em Library/.')
+      .setName(t('settings.mirrorStructure.name'))
+      .setDesc(t('settings.mirrorStructure.desc'))
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.mirrorFolderStructure)
         .onChange(async (value) => {
@@ -49,14 +50,14 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
     let baseFolderMoveFrom = this.plugin.settings.baseFolderPath;
     let baseFolderPending = this.plugin.settings.baseFolderPath;
     new Setting(containerEl)
-      .setName('Pasta do arquivo base (Bases)')
-      .setDesc('Pasta onde o arquivo "Attachments Library.base" será criado. Deixe em branco para a raiz do vault. Após alterar, clique em "Mover" para mover o arquivo existente.')
+      .setName(t('settings.baseFolder.name'))
+      .setDesc(t('settings.baseFolder.desc'))
       .addText(text => text
-        .setPlaceholder('Raiz do vault')
+        .setPlaceholder(t('settings.baseFolder.placeholder'))
         .setValue(this.plugin.settings.baseFolderPath)
         .onChange(value => { baseFolderPending = value.trim(); }))
       .addButton(btn => btn
-        .setButtonText('Mover')
+        .setButtonText(t('settings.baseFolder.moveBtn'))
         .onClick(async () => {
           const oldFolder = baseFolderMoveFrom;
           const newFolder = baseFolderPending;
@@ -64,14 +65,14 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
           await this.plugin.moveBaseFile(oldFolder, newFolder);
           baseFolderMoveFrom = newFolder;
-          btn.setButtonText('Movido!');
-          setTimeout(() => btn.setButtonText('Mover'), 3000);
+          btn.setButtonText(t('settings.baseFolder.movedBtn'));
+          setTimeout(() => btn.setButtonText(t('settings.baseFolder.moveBtn')), 3000);
         }));
 
-    containerEl.createEl('h3', { text: 'Comportamento Automático' });
+    containerEl.createEl('h3', { text: t('settings.sections.behavior') });
 
     new Setting(containerEl)
-      .setName('Criar nota ao adicionar arquivo')
+      .setName(t('settings.autoCreate.name'))
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.autoCreateOnNew)
         .onChange(async (value) => {
@@ -80,8 +81,8 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         }));
 
     new Setting(containerEl)
-      .setName('Remover nota ao deletar arquivo')
-      .setDesc('Move a nota para a lixeira do sistema (reversível).')
+      .setName(t('settings.autoDelete.name'))
+      .setDesc(t('settings.autoDelete.desc'))
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.autoDeleteOnRemove)
         .onChange(async (value) => {
@@ -89,13 +90,13 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
-    containerEl.createEl('h3', { text: 'Propriedade de Tags' });
+    containerEl.createEl('h3', { text: t('settings.sections.tagsProperty') });
 
     new Setting(containerEl)
-      .setName('Nome da propriedade de tags')
-      .setDesc('Nome do campo frontmatter usado para tags. "tags" ativa a integração nativa do Obsidian (chips coloridos). Alterar este valor não renomeia propriedades em notas existentes — use o botão abaixo.')
+      .setName(t('settings.tagsPropertyName.name'))
+      .setDesc(t('settings.tagsPropertyName.desc'))
       .addText(text => text
-        .setPlaceholder('tags')
+        .setPlaceholder(t('settings.tagsPropertyName.placeholder'))
         .setValue(this.plugin.settings.tagsPropertyName)
         .onChange(async (value) => {
           this.plugin.settings.tagsPropertyName = value.trim() || 'tags';
@@ -104,37 +105,37 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
 
     let migrateFromInput = '';
     new Setting(containerEl)
-      .setName('Renomear propriedade em notas existentes')
-      .setDesc('Renomeia um campo frontmatter em todas as notas da biblioteca, preservando os valores.')
+      .setName(t('settings.migrateTags.name'))
+      .setDesc(t('settings.migrateTags.desc'))
       .addText(text => text
-        .setPlaceholder('nome antigo (ex: keywords)')
+        .setPlaceholder(t('settings.migrateTags.placeholder'))
         .onChange(value => { migrateFromInput = value.trim(); }))
       .addButton(btn => btn
-        .setButtonText('Renomear')
+        .setButtonText(t('settings.migrateTags.renameBtn'))
         .onClick(async () => {
           if (!migrateFromInput) return;
           const newName = this.plugin.settings.tagsPropertyName;
           const count = await this.plugin.migrateTagsProperty(migrateFromInput, newName);
-          btn.setButtonText(`Concluído: ${count} nota(s) migrada(s)`);
-          setTimeout(() => btn.setButtonText('Renomear'), 4000);
+          btn.setButtonText(t('settings.migrateTags.doneBtn', { count }));
+          setTimeout(() => btn.setButtonText(t('settings.migrateTags.renameBtn')), 4000);
         }));
 
     new Setting(containerEl)
-      .setName('Sanitizar tags em notas existentes')
-      .setDesc('Corrige tags inválidas nas notas da biblioteca: substitui espaços por hífens e remove caracteres não permitidos pelo Obsidian.')
+      .setName(t('settings.sanitizeTags.name'))
+      .setDesc(t('settings.sanitizeTags.desc'))
       .addButton(btn => btn
-        .setButtonText('Sanitizar tags')
+        .setButtonText(t('settings.sanitizeTags.btn'))
         .onClick(async () => {
           const count = await this.plugin.sanitizeSidecarTags();
-          btn.setButtonText(`Concluído: ${count} nota(s) corrigida(s)`);
-          setTimeout(() => btn.setButtonText('Sanitizar tags'), 4000);
+          btn.setButtonText(t('settings.sanitizeTags.doneBtn', { count }));
+          setTimeout(() => btn.setButtonText(t('settings.sanitizeTags.btn')), 4000);
         }));
 
-    containerEl.createEl('h3', { text: 'Metadados de PDF' });
+    containerEl.createEl('h3', { text: t('settings.sections.pdfMetadata') });
 
     new Setting(containerEl)
-      .setName('Extrair metadados embutidos em PDFs')
-      .setDesc('Lê title, author, subject e keywords do arquivo PDF localmente, sem internet.')
+      .setName(t('settings.pdfExtraction.name'))
+      .setDesc(t('settings.pdfExtraction.desc'))
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.enablePdfMetadataExtraction)
         .onChange(async (value) => {
@@ -143,8 +144,8 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         }));
 
     new Setting(containerEl)
-      .setName('Busca online via DOI/ISBN')
-      .setDesc('Consulta CrossRef (DOI) e OpenLibrary (ISBN). Gratuito, sem API key necessária.')
+      .setName(t('settings.doiLookup.name'))
+      .setDesc(t('settings.doiLookup.desc'))
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.enableDoiIsbnLookup)
         .onChange(async (value) => {
@@ -152,13 +153,13 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
-    containerEl.createEl('h3', { text: 'Ações' });
+    containerEl.createEl('h3', { text: t('settings.sections.actions') });
 
     new Setting(containerEl)
-      .setName('Indexar todos os arquivos existentes')
-      .setDesc('Cria notas para todos os arquivos em Attachments/ que ainda não têm nota. Não sobrescreve notas existentes.')
+      .setName(t('settings.backfill.name'))
+      .setDesc(t('settings.backfill.desc'))
       .addButton(btn => btn
-        .setButtonText('Executar Backfill')
+        .setButtonText(t('settings.backfill.btn'))
         .setCta()
         .onClick(() => {
           void this.plugin.runBackfill();
