@@ -46,6 +46,28 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
+    let baseFolderMoveFrom = this.plugin.settings.baseFolderPath;
+    let baseFolderPending = this.plugin.settings.baseFolderPath;
+    new Setting(containerEl)
+      .setName('Pasta do arquivo base (Bases)')
+      .setDesc('Pasta onde o arquivo "Attachments Library.base" será criado. Deixe em branco para a raiz do vault. Após alterar, clique em "Mover" para mover o arquivo existente.')
+      .addText(text => text
+        .setPlaceholder('Raiz do vault')
+        .setValue(this.plugin.settings.baseFolderPath)
+        .onChange(value => { baseFolderPending = value.trim(); }))
+      .addButton(btn => btn
+        .setButtonText('Mover')
+        .onClick(async () => {
+          const oldFolder = baseFolderMoveFrom;
+          const newFolder = baseFolderPending;
+          this.plugin.settings.baseFolderPath = newFolder;
+          await this.plugin.saveSettings();
+          await this.plugin.moveBaseFile(oldFolder, newFolder);
+          baseFolderMoveFrom = newFolder;
+          btn.setButtonText('Movido!');
+          setTimeout(() => btn.setButtonText('Mover'), 3000);
+        }));
+
     containerEl.createEl('h3', { text: 'Comportamento Automático' });
 
     new Setting(containerEl)

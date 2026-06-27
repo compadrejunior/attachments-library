@@ -5,6 +5,7 @@ export interface AttachmentsLibrarySettings {
   autoCreateOnNew: boolean;
   autoDeleteOnRemove: boolean;
   mirrorFolderStructure: boolean;
+  baseFolderPath: string;
   enablePdfMetadataExtraction: boolean;
   enableDoiIsbnLookup: boolean;
   autoCreateBaseFile: boolean;
@@ -51,6 +52,7 @@ export const DEFAULT_SETTINGS: AttachmentsLibrarySettings = {
   autoCreateOnNew: true,
   autoDeleteOnRemove: true,
   mirrorFolderStructure: true,
+  baseFolderPath: "",
   enablePdfMetadataExtraction: true,
   enableDoiIsbnLookup: false,
   autoCreateBaseFile: true,

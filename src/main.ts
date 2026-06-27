@@ -113,6 +113,10 @@ export default class AttachmentsLibraryPlugin extends Plugin {
     await this.backfillManager.runBackfill();
   }
 
+  async moveBaseFile(oldFolder: string, newFolder: string): Promise<void> {
+    await this.basesCreator.moveBaseFile(oldFolder, newFolder);
+  }
+
   async migrateTagsProperty(oldName: string, newName: string): Promise<number> {
     return this.sidecarManager.migrateTagsProperty(oldName, newName);
   }

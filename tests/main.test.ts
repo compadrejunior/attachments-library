@@ -19,6 +19,7 @@ const mockBackfillInstance = vi.hoisted(() => ({
 
 const mockBasesCreatorInstance = vi.hoisted(() => ({
   createOrUpdateBaseFile: vi.fn(),
+  moveBaseFile: vi.fn(),
 }));
 
 vi.mock('../src/sidecar-manager', () => ({
@@ -97,6 +98,7 @@ describe('AttachmentsLibraryPlugin', () => {
     mockSidecarInstance.sanitizeSidecarTags.mockResolvedValue(3);
     mockBackfillInstance.runBackfill.mockResolvedValue(undefined);
     mockBasesCreatorInstance.createOrUpdateBaseFile.mockResolvedValue(undefined);
+    mockBasesCreatorInstance.moveBaseFile.mockResolvedValue(undefined);
   });
 
   // ─── lifecycle ────────────────────────────────────────────────────────────
@@ -190,6 +192,14 @@ describe('AttachmentsLibraryPlugin', () => {
       const { plugin } = await createPlugin();
       const count = await plugin.sanitizeSidecarTags();
       expect(count).toBe(3);
+    });
+  });
+
+  describe('moveBaseFile', () => {
+    it('delegates to basesCreator', async () => {
+      const { plugin } = await createPlugin();
+      await plugin.moveBaseFile('OldFolder', 'NewFolder');
+      expect(mockBasesCreatorInstance.moveBaseFile).toHaveBeenCalledWith('OldFolder', 'NewFolder');
     });
   });
 
