@@ -75,8 +75,7 @@ _fileType: pdf
 _filePath: "Attachments/Papers/some-paper.pdf"
 _heuristic: false
 ---
-
-![[Attachments/Papers/some-paper.pdf]]
+! [[Attachments/Papers/some-paper.pdf]]
 ```
 
 The `_heuristic: true` flag marks notes whose metadata was auto-extracted (from PDF or a DOI/ISBN lookup) and may need human review.
@@ -87,27 +86,27 @@ The `_heuristic: true` flag marks notes whose metadata was auto-extracted (from 
 
 Open **Settings → Attachments Library** to adjust the plugin's behaviour.
 
-| Setting | Default | Description |
-|---|---|---|
-| Attachments Folder | `Attachments` | Folder to watch. Should match Obsidian's *Default location for new attachments* setting. |
-| Library Folder | `Library` | Where sidecar notes are created. |
-| Mirror subfolder structure | On | Replicates subfolders from `Attachments/` into `Library/`. |
-| Auto-create note on new file | On | Creates a sidecar whenever a watched file is added. |
-| Auto-delete note on file removal | On | Moves the sidecar to the system trash when the attachment is deleted. |
-| Extract embedded PDF metadata | On | Reads `title`, `author`, `subject`, and `keywords` from PDF files locally. |
-| Online DOI / ISBN lookup | Off | Queries CrossRef and OpenLibrary to enrich metadata. No API key needed. |
-| Auto-create Bases file | On | Creates and updates `Attachments Library.base` in your vault root. |
-| Bases file location | *(vault root)* | Custom folder where the `.base` file is created. Leave blank for the vault root. |
-| Tags property name | `tags` | YAML property used for tags. Use `tags` to get Obsidian's native tag chip UI. |
+| Setting                          | Default        | Description                                                                              |
+| -------------------------------- | -------------- | ---------------------------------------------------------------------------------------- |
+| Attachments Folder               | `Attachments`  | Folder to watch. Should match Obsidian's _Default location for new attachments_ setting. |
+| Library Folder                   | `Library`      | Where sidecar notes are created.                                                         |
+| Mirror subfolder structure       | On             | Replicates subfolders from `Attachments/` into `Library/`.                               |
+| Auto-create note on new file     | On             | Creates a sidecar whenever a watched file is added.                                      |
+| Auto-delete note on file removal | On             | Moves the sidecar to the system trash when the attachment is deleted.                    |
+| Extract embedded PDF metadata    | On             | Reads `title`, `author`, `subject`, and `keywords` from PDF files locally.               |
+| Online DOI / ISBN lookup         | Off            | Queries CrossRef and OpenLibrary to enrich metadata. No API key needed.                  |
+| Auto-create Bases file           | On             | Creates and updates `Attachments Library.base` in your vault root.                       |
+| Bases file location              | _(vault root)_ | Custom folder where the `.base` file is created. Leave blank for the vault root.         |
+| Tags property name               | `tags`         | YAML property used for tags. Use `tags` to get Obsidian's native tag chip UI.            |
 
 **Watched extensions (default):** `.pdf` `.epub` `.docx` `.xlsx` `.pptx` `.png` `.jpg` `.jpeg` `.gif` `.mp4` `.mp3` `.zip`
 
 ## Commands
 
-| Command | Description |
-|---|---|
-| **Index all existing files (Backfill)** | Creates sidecar notes for every file in the Attachments folder that doesn't have one yet. Already-indexed files are skipped. |
-| **Create metadata note for active file** | Creates a sidecar for whichever attachment is currently open or selected. |
+| Command                                  | Description                                                                                                                  |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Index all existing files (Backfill)**  | Creates sidecar notes for every file in the Attachments folder that doesn't have one yet. Already-indexed files are skipped. |
+| **Create metadata note for active file** | Creates a sidecar for whichever attachment is currently open or selected.                                                    |
 
 Access commands via the Command Palette (`Ctrl/Cmd + P`).
 
