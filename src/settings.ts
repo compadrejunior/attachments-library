@@ -67,6 +67,47 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
+    containerEl.createEl('h3', { text: 'Propriedade de Tags' });
+
+    new Setting(containerEl)
+      .setName('Nome da propriedade de tags')
+      .setDesc('Nome do campo frontmatter usado para tags. "tags" ativa a integração nativa do Obsidian (chips coloridos). Alterar este valor não renomeia propriedades em notas existentes — use o botão abaixo.')
+      .addText(text => text
+        .setPlaceholder('tags')
+        .setValue(this.plugin.settings.tagsPropertyName)
+        .onChange(async (value) => {
+          this.plugin.settings.tagsPropertyName = value.trim() || 'tags';
+          await this.plugin.saveSettings();
+        }));
+
+    let migrateFromInput = '';
+    new Setting(containerEl)
+      .setName('Renomear propriedade em notas existentes')
+      .setDesc('Renomeia um campo frontmatter em todas as notas da biblioteca, preservando os valores.')
+      .addText(text => text
+        .setPlaceholder('nome antigo (ex: keywords)')
+        .onChange(value => { migrateFromInput = value.trim(); }))
+      .addButton(btn => btn
+        .setButtonText('Renomear')
+        .onClick(async () => {
+          if (!migrateFromInput) return;
+          const newName = this.plugin.settings.tagsPropertyName;
+          const count = await this.plugin.migrateTagsProperty(migrateFromInput, newName);
+          btn.setButtonText(`Concluído: ${count} nota(s) migrada(s)`);
+          setTimeout(() => btn.setButtonText('Renomear'), 4000);
+        }));
+
+    new Setting(containerEl)
+      .setName('Sanitizar tags em notas existentes')
+      .setDesc('Corrige tags inválidas nas notas da biblioteca: substitui espaços por hífens e remove caracteres não permitidos pelo Obsidian.')
+      .addButton(btn => btn
+        .setButtonText('Sanitizar tags')
+        .onClick(async () => {
+          const count = await this.plugin.sanitizeSidecarTags();
+          btn.setButtonText(`Concluído: ${count} nota(s) corrigida(s)`);
+          setTimeout(() => btn.setButtonText('Sanitizar tags'), 4000);
+        }));
+
     containerEl.createEl('h3', { text: 'Metadados de PDF' });
 
     new Setting(containerEl)
@@ -98,7 +139,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         .setButtonText('Executar Backfill')
         .setCta()
         .onClick(() => {
-          this.plugin.runBackfill();
+          void this.plugin.runBackfill();
         }));
   }
 }

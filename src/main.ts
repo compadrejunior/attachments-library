@@ -7,7 +7,7 @@ import { AttachmentsLibrarySettingsTab } from './settings';
 
 export default class AttachmentsLibraryPlugin extends Plugin {
   settings: AttachmentsLibrarySettings;
-  private sidecarManager: SidecarManager;
+  sidecarManager: SidecarManager;
   private backfillManager: BackfillManager;
   private basesCreator: BasesCreator;
 
@@ -39,7 +39,7 @@ export default class AttachmentsLibraryPlugin extends Plugin {
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) return false;
         if (checking) return true;
-        this.sidecarManager.createSidecar(activeFile);
+        void this.sidecarManager.createSidecar(activeFile);
         return true;
       },
     });
@@ -49,12 +49,12 @@ export default class AttachmentsLibraryPlugin extends Plugin {
 
   private registerVaultEvents(): void {
     this.registerEvent(
-      this.app.vault.on('create', async (file: TAbstractFile) => {
+      this.app.vault.on('create', (file: TAbstractFile) => {
         if (!this.settings.autoCreateOnNew) return;
         if (!(file instanceof TFile)) return;
         if (!this.isWatchedAttachment(file)) return;
 
-        setTimeout(() => this.sidecarManager.createSidecar(file as TFile), 500);
+        setTimeout(() => { void this.sidecarManager.createSidecar(file); }, 500);
       })
     );
 
@@ -80,7 +80,7 @@ export default class AttachmentsLibraryPlugin extends Plugin {
         } else if (wasWatched && !isWatched) {
           await this.sidecarManager.deleteSidecar(oldPath);
         } else if (!wasWatched && isWatched) {
-          await this.sidecarManager.createSidecar(file as TFile);
+          await this.sidecarManager.createSidecar(file);
         }
       })
     );
@@ -89,7 +89,7 @@ export default class AttachmentsLibraryPlugin extends Plugin {
       this.app.vault.on('modify', async (file: TAbstractFile) => {
         if (!(file instanceof TFile)) return;
         if (!this.isWatchedAttachment(file)) return;
-        await this.sidecarManager.updateSidecarDates(file as TFile);
+        await this.sidecarManager.updateSidecarDates(file);
       })
     );
   }
@@ -113,8 +113,16 @@ export default class AttachmentsLibraryPlugin extends Plugin {
     await this.backfillManager.runBackfill();
   }
 
+  async migrateTagsProperty(oldName: string, newName: string): Promise<number> {
+    return this.sidecarManager.migrateTagsProperty(oldName, newName);
+  }
+
+  async sanitizeSidecarTags(): Promise<number> {
+    return this.sidecarManager.sanitizeSidecarTags();
+  }
+
   async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<AttachmentsLibrarySettings>);
   }
 
   async saveSettings(): Promise<void> {

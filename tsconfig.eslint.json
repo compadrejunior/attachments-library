@@ -5,11 +5,16 @@
     "module": "ESNext",
     "target": "ES6",
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
     "strictNullChecks": true,
     "lib": ["ES6", "DOM"]
   },
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "__mocks__/**/*.ts",
+    "vitest.config.ts"
+  ]
 }

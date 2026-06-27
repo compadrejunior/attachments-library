@@ -8,13 +8,14 @@ export interface AttachmentsLibrarySettings {
   enablePdfMetadataExtraction: boolean;
   enableDoiIsbnLookup: boolean;
   autoCreateBaseFile: boolean;
+  tagsPropertyName: string;
 }
 
 export interface AttachmentMetadata {
   attachment: string;
   title: string;
   author: string;
-  keywords: string[];
+  tags: string[];
   subject: string;
   genre: string;
   source: string;
@@ -33,7 +34,7 @@ export type AttachmentStatus =
 export const DEFAULT_METADATA: Omit<AttachmentMetadata, 'attachment' | 'created' | 'updated' | '_fileType' | '_filePath'> = {
   title: "",
   author: "",
-  keywords: [],
+  tags: [],
   subject: "",
   genre: "",
   source: "",
@@ -53,4 +54,5 @@ export const DEFAULT_SETTINGS: AttachmentsLibrarySettings = {
   enablePdfMetadataExtraction: true,
   enableDoiIsbnLookup: false,
   autoCreateBaseFile: true,
+  tagsPropertyName: "tags",
 };

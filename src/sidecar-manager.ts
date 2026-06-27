@@ -59,7 +59,11 @@ export class SidecarManager {
       if (extracted.title) { metadata.title = extracted.title; metadata._heuristic = true; }
       if (extracted.author) { metadata.author = extracted.author; metadata._heuristic = true; }
       if (extracted.subject) metadata.subject = extracted.subject;
-      if (extracted.keywords.length > 0) metadata.keywords = extracted.keywords;
+      if (extracted.keywords.length > 0) metadata.tags = extracted.keywords;
+    }
+
+    if (!metadata.title) {
+      metadata.title = attachmentFile.basename;
     }
 
     const content = this.buildSidecarContent(metadata, attachmentFile.name);
@@ -106,9 +110,61 @@ export class SidecarManager {
     await this.app.vault.trash(sidecar, true);
   }
 
+  private sanitizeTag(raw: string): string {
+    return raw
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-zA-Z0-9\-_/]/g, '')
+      .replace(/-{2,}/g, '-')
+      .replace(/^[-_]+|[-_]+$/g, '');
+  }
+
+  async sanitizeSidecarTags(): Promise<number> {
+    const tagKey = this.settings.tagsPropertyName;
+    const sidecars = this.app.vault.getMarkdownFiles()
+      .filter(f => f.path.startsWith(this.settings.libraryFolder + "/"));
+
+    let updated = 0;
+    for (const sidecar of sidecars) {
+      await this.app.fileManager.processFrontMatter(sidecar, (fm) => {
+        const existing: unknown = fm[tagKey];
+        if (!Array.isArray(existing)) return;
+        const sanitized = (existing as string[])
+          .map(t => this.sanitizeTag(String(t)))
+          .filter(t => t.length > 0);
+        const changed = sanitized.some((t, i) => t !== (existing as string[])[i]) ||
+                        sanitized.length !== (existing as string[]).length;
+        if (changed) {
+          fm[tagKey] = sanitized;
+          updated++;
+        }
+      });
+    }
+    return updated;
+  }
+
+  async migrateTagsProperty(oldName: string, newName: string): Promise<number> {
+    const sidecars = this.app.vault.getMarkdownFiles()
+      .filter(f => f.path.startsWith(this.settings.libraryFolder + "/"));
+
+    let migrated = 0;
+    for (const sidecar of sidecars) {
+      await this.app.fileManager.processFrontMatter(sidecar, (fm) => {
+        if (oldName in fm) {
+          fm[newName] = fm[oldName];
+          delete fm[oldName];
+          migrated++;
+        }
+      });
+    }
+    return migrated;
+  }
+
   private buildSidecarContent(meta: AttachmentMetadata, fileName: string): string {
-    const keywordsYaml = meta.keywords.length > 0
-      ? `\n${meta.keywords.map(k => `  - "${k}"`).join('\n')}`
+    const tagsKey = this.settings.tagsPropertyName;
+    const cleanTags = meta.tags.map(t => this.sanitizeTag(t)).filter(t => t.length > 0);
+    const tagsYaml = cleanTags.length > 0
+      ? `\n${cleanTags.map(t => `  - ${t}`).join('\n')}`
       : " []";
 
     return [
@@ -116,7 +172,7 @@ export class SidecarManager {
       `attachment: "[[${meta._filePath}]]"`,
       `title: "${meta.title}"`,
       `author: "${meta.author}"`,
-      `keywords:${keywordsYaml}`,
+      `${tagsKey}:${tagsYaml}`,
       `subject: "${meta.subject}"`,
       `genre: ""`,
       `source: ""`,

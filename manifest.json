@@ -4,6 +4,6 @@
   "version": "1.0.0",
   "minAppVersion": "1.7.0",
   "description": "Automatically indexes Attachments folder files with user-defined metadata via sidecar notes.",
-  "author": "José",
+  "author": "José Compadre Junior",
   "isDesktopOnly": false
 }

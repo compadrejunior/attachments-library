@@ -46,15 +46,19 @@ export class PdfMetadataExtractor {
   }
 }
 
+interface CrossRefAuthor { family: string; given: string; }
+interface CrossRefWork { title?: string[]; author?: CrossRefAuthor[]; subject?: string[]; }
+interface CrossRefResponse { message: CrossRefWork; }
+
 export async function lookupDoi(doi: string): Promise<Partial<PdfExtractedMetadata>> {
   try {
     const response = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
     if (!response.ok) return {};
-    const data = await response.json();
+    const data = await response.json() as CrossRefResponse;
     const work = data.message;
     return {
       title: work.title?.[0] ?? "",
-      author: work.author?.map((a: any) => `${a.family}, ${a.given}`).join("; ") ?? "",
+      author: work.author?.map(a => `${a.family}, ${a.given}`).join("; ") ?? "",
       subject: work.subject?.[0] ?? "",
     };
   } catch {
@@ -62,11 +66,13 @@ export async function lookupDoi(doi: string): Promise<Partial<PdfExtractedMetada
   }
 }
 
+interface OpenLibraryBook { title?: string; subjects?: string[]; }
+
 export async function lookupIsbn(isbn: string): Promise<Partial<PdfExtractedMetadata>> {
   try {
     const response = await fetch(`https://openlibrary.org/isbn/${isbn}.json`);
     if (!response.ok) return {};
-    const data = await response.json();
+    const data = await response.json() as OpenLibraryBook;
     return {
       title: data.title ?? "",
       subject: data.subjects?.[0] ?? "",
