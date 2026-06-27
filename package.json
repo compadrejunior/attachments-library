@@ -15,7 +15,7 @@
     "pipeline": "npm run lint && npm run test:coverage && npm run build"
   },
   "devDependencies": {
-    "@types/node": "^16.11.6",
+    "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^4.1.9",
     "builtin-modules": "^3.3.0",
     "esbuild": "^0.28.1",
