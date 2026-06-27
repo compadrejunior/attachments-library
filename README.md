@@ -15,20 +15,55 @@ Obsidian's drag-and-drop workflow is great for collecting PDFs, images, videos, 
 - **Lifecycle sync** — renaming or deleting an attachment renames or removes its sidecar note automatically.
 - **Backfill** — one command indexes all pre-existing files that don't have a sidecar yet. Existing notes are never overwritten.
 - **Obsidian Bases integration** — automatically creates an `Attachments Library.base` file so you can browse, sort, and filter your entire library in a spreadsheet-like view.
+- **Multilanguage UI** — the settings interface is available in English and Brazilian Portuguese, following Obsidian's language setting automatically.
 - **Configurable** — choose which folder to watch, which file extensions to track, and which automatic behaviours to enable.
 
-## Sidecar note structure
+## Installation
 
-Each sidecar note is a Markdown file with YAML frontmatter:
+### Community Plugins (recommended)
+
+1. Open Obsidian → **Settings → Community plugins**.
+2. Make sure **Restricted mode** is **off**.
+3. Click **Browse**, search for **Attachments Library**, and click **Install**.
+4. Enable the plugin.
+
+### Manual installation
+
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/compadrejunior/attachments-library/releases/latest).
+2. Copy the three files into your vault's plugin folder:
+
+   ```
+   <your-vault>/.obsidian/plugins/attachments-library/
+   ├── main.js
+   ├── manifest.json
+   └── styles.css
+   ```
+
+3. Open Obsidian → **Settings → Community plugins**, find **Attachments Library** in the installed list, and enable it.
+
+### Building from source
+
+```bash
+git clone https://github.com/compadrejunior/attachments-library
+cd attachments-library
+npm install
+npm run build
+```
+
+The compiled `main.js` will appear in the project root alongside `manifest.json` and `styles.css`.
+
+## How it works
+
+When you add a file to your `Attachments` folder, the plugin creates a Markdown sidecar note in the `Library` folder with YAML frontmatter containing the file's metadata:
 
 ```yaml
 ---
 attachment: "Attachments/Papers/some-paper.pdf"
 title: "The Paper Title"
 author: "Jane Doe"
-keywords:
-  - machine learning
-  - neural networks
+tags:
+  - machine-learning
+  - neural-networks
 subject: "Computer Science"
 genre: ""
 source: ""
@@ -40,38 +75,13 @@ _fileType: pdf
 _filePath: "Attachments/Papers/some-paper.pdf"
 _heuristic: false
 ---
+
+![[Attachments/Papers/some-paper.pdf]]
 ```
+
+The `_heuristic: true` flag marks notes whose metadata was auto-extracted (from PDF or a DOI/ISBN lookup) and may need human review.
 
 **Status values:** `unread` · `reading` · `done` · `archived` · `discarded`
-
-## Installation
-
-### Manual installation
-
-1. Download or build the plugin (see [Building from source](#building-from-source)).
-2. Copy the three files below into your vault's plugin folder:
-
-   ```
-   <your-vault>/.obsidian/plugins/attachments-library/
-   ├── main.js
-   ├── manifest.json
-   └── styles.css
-   ```
-
-3. Open Obsidian → **Settings → Community plugins**.
-4. Make sure **Restricted mode** is **off**.
-5. Find **Attachments Library** in the installed plugins list and enable it.
-
-### Building from source
-
-```bash
-git clone https://github.com/<your-username>/attachments-library
-cd attachments-library
-npm install
-npm run build
-```
-
-The compiled `main.js` will appear in the project root alongside `manifest.json` and `styles.css`.
 
 ## Configuration
 
@@ -86,6 +96,9 @@ Open **Settings → Attachments Library** to adjust the plugin's behaviour.
 | Auto-delete note on file removal | On | Moves the sidecar to the system trash when the attachment is deleted. |
 | Extract embedded PDF metadata | On | Reads `title`, `author`, `subject`, and `keywords` from PDF files locally. |
 | Online DOI / ISBN lookup | Off | Queries CrossRef and OpenLibrary to enrich metadata. No API key needed. |
+| Auto-create Bases file | On | Creates and updates `Attachments Library.base` in your vault root. |
+| Bases file location | *(vault root)* | Custom folder where the `.base` file is created. Leave blank for the vault root. |
+| Tags property name | `tags` | YAML property used for tags. Use `tags` to get Obsidian's native tag chip UI. |
 
 **Watched extensions (default):** `.pdf` `.epub` `.docx` `.xlsx` `.pptx` `.png` `.jpg` `.jpeg` `.gif` `.mp4` `.mp3` `.zip`
 
@@ -93,20 +106,26 @@ Open **Settings → Attachments Library** to adjust the plugin's behaviour.
 
 | Command | Description |
 |---|---|
-| **Index all existing files (Backfill)** | Creates sidecar notes for every file in `Attachments/` that doesn't have one yet. Already-indexed files are skipped. |
+| **Index all existing files (Backfill)** | Creates sidecar notes for every file in the Attachments folder that doesn't have one yet. Already-indexed files are skipped. |
 | **Create metadata note for active file** | Creates a sidecar for whichever attachment is currently open or selected. |
 
 Access commands via the Command Palette (`Ctrl/Cmd + P`).
 
 ## Obsidian Bases
 
-When enabled, the plugin automatically creates an `Attachments Library.base` file at the root of your vault. Open it to get a table view of your entire attachment library — sortable and filterable by title, author, status, file type, and more.
+When enabled, the plugin automatically creates an `Attachments Library.base` file in your vault. Open it to get a table view of your entire attachment library — sortable and filterable by title, author, status, file type, and more.
+
+You can customise the location of the `.base` file via the **Bases file location** setting.
 
 ## Requirements
 
 - Obsidian **1.7.0** or later.
-- The plugin works on desktop and mobile.
+- Works on desktop and mobile.
+
+## Contributing
+
+Bug reports and pull requests are welcome at [github.com/compadrejunior/attachments-library](https://github.com/compadrejunior/attachments-library).
 
 ## License
 
-MIT
+[MIT](LICENSE)
