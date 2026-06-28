@@ -66,7 +66,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.moveBaseFile(oldFolder, newFolder);
           baseFolderMoveFrom = newFolder;
           btn.setButtonText(t('settings.baseFolder.movedBtn'));
-          window.setTimeout(() => btn.setButtonText(t('settings.baseFolder.moveBtn')), 3000);
+          window.setTimeout(() => { btn.setButtonText(t('settings.baseFolder.moveBtn')); }, 3000);
         })(); }));
 
     new Setting(containerEl).setName(t('settings.sections.behavior')).setHeading();
@@ -117,7 +117,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           const newName = this.plugin.settings.tagsPropertyName;
           const count = await this.plugin.migrateTagsProperty(migrateFromInput, newName);
           btn.setButtonText(t('settings.migrateTags.doneBtn', { count }));
-          window.setTimeout(() => btn.setButtonText(t('settings.migrateTags.renameBtn')), 4000);
+          window.setTimeout(() => { btn.setButtonText(t('settings.migrateTags.renameBtn')); }, 4000);
         })(); }));
 
     new Setting(containerEl)
@@ -128,7 +128,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         .onClick(() => { void (async () => {
           const count = await this.plugin.sanitizeSidecarTags();
           btn.setButtonText(t('settings.sanitizeTags.doneBtn', { count }));
-          window.setTimeout(() => btn.setButtonText(t('settings.sanitizeTags.btn')), 4000);
+          window.setTimeout(() => { btn.setButtonText(t('settings.sanitizeTags.btn')); }, 4000);
         })(); }));
 
     new Setting(containerEl).setName(t('settings.sections.pdfMetadata')).setHeading();
