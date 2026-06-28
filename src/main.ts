@@ -56,7 +56,7 @@ export default class AttachmentsLibraryPlugin extends Plugin {
         if (!(file instanceof TFile)) return;
         if (!this.isWatchedAttachment(file)) return;
 
-        setTimeout(() => { void this.sidecarManager.createSidecar(file); }, 500);
+        window.setTimeout(() => { void this.sidecarManager.createSidecar(file); }, 500);
       })
     );
 

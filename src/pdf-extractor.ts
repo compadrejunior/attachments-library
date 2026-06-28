@@ -1,5 +1,5 @@
 import { PDFDocument } from 'pdf-lib';
-import { App, TFile } from 'obsidian';
+import { App, TFile, requestUrl } from 'obsidian';
 
 export interface PdfExtractedMetadata {
   title: string;
@@ -52,9 +52,8 @@ interface CrossRefResponse { message: CrossRefWork; }
 
 export async function lookupDoi(doi: string): Promise<Partial<PdfExtractedMetadata>> {
   try {
-    const response = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
-    if (!response.ok) return {};
-    const data = await response.json() as CrossRefResponse;
+    const response = await requestUrl(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
+    const data = response.json as CrossRefResponse;
     const work = data.message;
     return {
       title: work.title?.[0] ?? "",
@@ -70,9 +69,8 @@ interface OpenLibraryBook { title?: string; subjects?: string[]; }
 
 export async function lookupIsbn(isbn: string): Promise<Partial<PdfExtractedMetadata>> {
   try {
-    const response = await fetch(`https://openlibrary.org/isbn/${isbn}.json`);
-    if (!response.ok) return {};
-    const data = await response.json() as OpenLibraryBook;
+    const response = await requestUrl(`https://openlibrary.org/isbn/${isbn}.json`);
+    const data = response.json as OpenLibraryBook;
     return {
       title: data.title ?? "",
       subject: data.subjects?.[0] ?? "",

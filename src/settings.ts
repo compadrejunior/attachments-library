@@ -11,9 +11,9 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: t('settings.heading') });
+    new Setting(containerEl).setName(t('settings.heading')).setHeading();
 
-    containerEl.createEl('h3', { text: t('settings.sections.folders') });
+    new Setting(containerEl).setName(t('settings.sections.folders')).setHeading();
 
     new Setting(containerEl)
       .setName(t('settings.attachmentsFolder.name'))
@@ -58,7 +58,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         .onChange(value => { baseFolderPending = value.trim(); }))
       .addButton(btn => btn
         .setButtonText(t('settings.baseFolder.moveBtn'))
-        .onClick(async () => {
+        .onClick(() => { void (async () => {
           const oldFolder = baseFolderMoveFrom;
           const newFolder = baseFolderPending;
           this.plugin.settings.baseFolderPath = newFolder;
@@ -66,10 +66,10 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.moveBaseFile(oldFolder, newFolder);
           baseFolderMoveFrom = newFolder;
           btn.setButtonText(t('settings.baseFolder.movedBtn'));
-          setTimeout(() => btn.setButtonText(t('settings.baseFolder.moveBtn')), 3000);
-        }));
+          window.setTimeout(() => btn.setButtonText(t('settings.baseFolder.moveBtn')), 3000);
+        })(); }));
 
-    containerEl.createEl('h3', { text: t('settings.sections.behavior') });
+    new Setting(containerEl).setName(t('settings.sections.behavior')).setHeading();
 
     new Setting(containerEl)
       .setName(t('settings.autoCreate.name'))
@@ -90,7 +90,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
-    containerEl.createEl('h3', { text: t('settings.sections.tagsProperty') });
+    new Setting(containerEl).setName(t('settings.sections.tagsProperty')).setHeading();
 
     new Setting(containerEl)
       .setName(t('settings.tagsPropertyName.name'))
@@ -112,26 +112,26 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         .onChange(value => { migrateFromInput = value.trim(); }))
       .addButton(btn => btn
         .setButtonText(t('settings.migrateTags.renameBtn'))
-        .onClick(async () => {
+        .onClick(() => { void (async () => {
           if (!migrateFromInput) return;
           const newName = this.plugin.settings.tagsPropertyName;
           const count = await this.plugin.migrateTagsProperty(migrateFromInput, newName);
           btn.setButtonText(t('settings.migrateTags.doneBtn', { count }));
-          setTimeout(() => btn.setButtonText(t('settings.migrateTags.renameBtn')), 4000);
-        }));
+          window.setTimeout(() => btn.setButtonText(t('settings.migrateTags.renameBtn')), 4000);
+        })(); }));
 
     new Setting(containerEl)
       .setName(t('settings.sanitizeTags.name'))
       .setDesc(t('settings.sanitizeTags.desc'))
       .addButton(btn => btn
         .setButtonText(t('settings.sanitizeTags.btn'))
-        .onClick(async () => {
+        .onClick(() => { void (async () => {
           const count = await this.plugin.sanitizeSidecarTags();
           btn.setButtonText(t('settings.sanitizeTags.doneBtn', { count }));
-          setTimeout(() => btn.setButtonText(t('settings.sanitizeTags.btn')), 4000);
-        }));
+          window.setTimeout(() => btn.setButtonText(t('settings.sanitizeTags.btn')), 4000);
+        })(); }));
 
-    containerEl.createEl('h3', { text: t('settings.sections.pdfMetadata') });
+    new Setting(containerEl).setName(t('settings.sections.pdfMetadata')).setHeading();
 
     new Setting(containerEl)
       .setName(t('settings.pdfExtraction.name'))
@@ -153,7 +153,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
-    containerEl.createEl('h3', { text: t('settings.sections.actions') });
+    new Setting(containerEl).setName(t('settings.sections.actions')).setHeading();
 
     new Setting(containerEl)
       .setName(t('settings.backfill.name'))

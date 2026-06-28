@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TFile } from 'obsidian';
+import { TFile, requestUrl } from 'obsidian';
 
 const mockLoad = vi.hoisted(() => vi.fn());
 
@@ -122,44 +122,39 @@ describe('PdfMetadataExtractor', () => {
 
 describe('lookupDoi', () => {
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn());
+    vi.mocked(requestUrl).mockReset();
   });
 
   it('returns title, author and subject on success', async () => {
-    const mockFetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
+    vi.mocked(requestUrl).mockResolvedValueOnce({
+      json: {
         message: {
           title: ['Deep Learning'],
           author: [{ family: 'Goodfellow', given: 'Ian' }, { family: 'Bengio', given: 'Yoshua' }],
           subject: ['Computer Science'],
         },
-      }),
-    });
-    vi.stubGlobal('fetch', mockFetch);
+      },
+    } as any);
     const result = await lookupDoi('10.1000/xyz123');
     expect(result.title).toBe('Deep Learning');
     expect(result.author).toBe('Goodfellow, Ian; Bengio, Yoshua');
     expect(result.subject).toBe('Computer Science');
   });
 
-  it('returns empty object when response is not ok', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
+  it('returns empty object when requestUrl throws (non-2xx)', async () => {
+    vi.mocked(requestUrl).mockRejectedValueOnce(new Error('HTTP 404'));
     const result = await lookupDoi('10.bad/doi');
     expect(result).toEqual({});
   });
 
-  it('returns empty object when fetch throws', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network error')));
+  it('returns empty object when requestUrl throws (network error)', async () => {
+    vi.mocked(requestUrl).mockRejectedValueOnce(new Error('network error'));
     const result = await lookupDoi('10.bad/doi');
     expect(result).toEqual({});
   });
 
   it('handles missing optional fields gracefully', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ message: {} }),
-    }));
+    vi.mocked(requestUrl).mockResolvedValueOnce({ json: { message: {} } } as any);
     const result = await lookupDoi('10.1000/xyz');
     expect(result.title).toBe('');
     expect(result.author).toBe('');
@@ -168,36 +163,33 @@ describe('lookupDoi', () => {
 });
 
 describe('lookupIsbn', () => {
+  beforeEach(() => {
+    vi.mocked(requestUrl).mockReset();
+  });
+
   it('returns title and subject on success', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        title: 'Clean Code',
-        subjects: ['Software Engineering'],
-      }),
-    }));
+    vi.mocked(requestUrl).mockResolvedValueOnce({
+      json: { title: 'Clean Code', subjects: ['Software Engineering'] },
+    } as any);
     const result = await lookupIsbn('9780132350884');
     expect(result.title).toBe('Clean Code');
     expect(result.subject).toBe('Software Engineering');
   });
 
-  it('returns empty object when response is not ok', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
+  it('returns empty object when requestUrl throws (non-2xx)', async () => {
+    vi.mocked(requestUrl).mockRejectedValueOnce(new Error('HTTP 404'));
     const result = await lookupIsbn('000');
     expect(result).toEqual({});
   });
 
-  it('returns empty object when fetch throws', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
+  it('returns empty object when requestUrl throws (network error)', async () => {
+    vi.mocked(requestUrl).mockRejectedValueOnce(new Error('offline'));
     const result = await lookupIsbn('000');
     expect(result).toEqual({});
   });
 
   it('handles missing optional fields gracefully', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({}),
-    }));
+    vi.mocked(requestUrl).mockResolvedValueOnce({ json: {} } as any);
     const result = await lookupIsbn('9780000000000');
     expect(result.title).toBe('');
     expect(result.subject).toBe('');

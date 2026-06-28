@@ -17,7 +17,6 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^4.1.9",
-    "builtin-modules": "^3.3.0",
     "esbuild": "^0.28.1",
     "eslint": "^10.6.0",
     "obsidian": "latest",

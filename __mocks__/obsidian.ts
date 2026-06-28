@@ -1,3 +1,7 @@
+import { vi } from 'vitest';
+
+export const requestUrl = vi.fn();
+
 export class TAbstractFile {
   path: string = '';
 }
@@ -47,6 +51,7 @@ export class Setting {
 
   setName(_name: string): this { return this; }
   setDesc(_desc: string): this { return this; }
+  setHeading(): this { return this; }
 
   addText(cb: (text: any) => void): this {
     const text = {

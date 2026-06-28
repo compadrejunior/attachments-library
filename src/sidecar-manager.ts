@@ -77,7 +77,7 @@ export class SidecarManager {
 
     const updatedDate = new Date(attachmentFile.stat.mtime).toISOString().split('T')[0];
 
-    await this.app.fileManager.processFrontMatter(sidecar, (fm) => {
+    await this.app.fileManager.processFrontMatter(sidecar, (fm: Record<string, unknown>) => {
       fm.updated = updatedDate;
     });
   }
@@ -89,7 +89,7 @@ export class SidecarManager {
     const sidecar = this.app.vault.getFileByPath(oldSidecarPath);
     if (!sidecar) return;
 
-    await this.app.fileManager.processFrontMatter(sidecar, (fm) => {
+    await this.app.fileManager.processFrontMatter(sidecar, (fm: Record<string, unknown>) => {
       fm.attachment = `[[${newPath}]]`;
       fm._filePath = newPath;
       fm.updated = new Date().toISOString().split('T')[0];
@@ -107,7 +107,7 @@ export class SidecarManager {
     const sidecarPath = this.getSidecarPath(attachmentPath);
     const sidecar = this.app.vault.getFileByPath(sidecarPath);
     if (!sidecar) return;
-    await this.app.vault.trash(sidecar, true);
+    await this.app.fileManager.trashFile(sidecar);
   }
 
   private sanitizeTag(raw: string): string {
@@ -126,7 +126,7 @@ export class SidecarManager {
 
     let updated = 0;
     for (const sidecar of sidecars) {
-      await this.app.fileManager.processFrontMatter(sidecar, (fm) => {
+      await this.app.fileManager.processFrontMatter(sidecar, (fm: Record<string, unknown>) => {
         const existing: unknown = fm[tagKey];
         if (!Array.isArray(existing)) return;
         const sanitized = (existing as string[])
@@ -149,7 +149,7 @@ export class SidecarManager {
 
     let migrated = 0;
     for (const sidecar of sidecars) {
-      await this.app.fileManager.processFrontMatter(sidecar, (fm) => {
+      await this.app.fileManager.processFrontMatter(sidecar, (fm: Record<string, unknown>) => {
         if (oldName in fm) {
           fm[newName] = fm[oldName];
           delete fm[oldName];

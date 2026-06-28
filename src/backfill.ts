@@ -53,7 +53,7 @@ export class BackfillManager {
         new Notice(t('backfill.progress', { processed, total, created, skipped }));
       }
 
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise(resolve => window.setTimeout(resolve, 50));
     }
 
     new Notice(t('backfill.complete', { created, skipped }));
