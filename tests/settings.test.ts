@@ -203,7 +203,8 @@ describe('AttachmentsLibrarySettingsTab', () => {
       const plugin = makePlugin({ baseFolderPath: '' });
       createTab(plugin);
       settingInstances[5]._textCbs[0]('Databases');
-      await settingInstances[5]._btnCbs[0]();
+      settingInstances[5]._btnCbs[0]();
+      await Promise.resolve(); await Promise.resolve();
       expect(plugin.settings.baseFolderPath).toBe('Databases');
       expect(plugin.saveSettings).toHaveBeenCalled();
       expect(plugin.moveBaseFile).toHaveBeenCalledWith('', 'Databases');
@@ -215,7 +216,8 @@ describe('AttachmentsLibrarySettingsTab', () => {
       const plugin = makePlugin({ baseFolderPath: '' });
       createTab(plugin);
       settingInstances[5]._textCbs[0]('  Databases  ');
-      await settingInstances[5]._btnCbs[0]();
+      settingInstances[5]._btnCbs[0]();
+      await Promise.resolve(); await Promise.resolve();
       expect(plugin.settings.baseFolderPath).toBe('Databases');
       expect(plugin.moveBaseFile).toHaveBeenCalledWith('', 'Databases');
       vi.useRealTimers();
@@ -227,10 +229,12 @@ describe('AttachmentsLibrarySettingsTab', () => {
       createTab(plugin);
       // First move: '' → 'Databases'
       settingInstances[5]._textCbs[0]('Databases');
-      await settingInstances[5]._btnCbs[0]();
+      settingInstances[5]._btnCbs[0]();
+      await Promise.resolve(); await Promise.resolve();
       // Second move: 'Databases' → 'Archive'
       settingInstances[5]._textCbs[0]('Archive');
-      await settingInstances[5]._btnCbs[0]();
+      settingInstances[5]._btnCbs[0]();
+      await Promise.resolve(); await Promise.resolve();
       expect(plugin.moveBaseFile).toHaveBeenNthCalledWith(2, 'Databases', 'Archive');
       vi.useRealTimers();
     });
@@ -285,7 +289,8 @@ describe('AttachmentsLibrarySettingsTab', () => {
     it('rename button does nothing when input is empty', async () => {
       const plugin = makePlugin();
       createTab(plugin);
-      await settingInstances[11]._btnCbs[0]();
+      settingInstances[11]._btnCbs[0]();
+      await Promise.resolve();
       expect(plugin.migrateTagsProperty).not.toHaveBeenCalled();
     });
 
@@ -295,7 +300,8 @@ describe('AttachmentsLibrarySettingsTab', () => {
       createTab(plugin);
       // Set the input first via onChange
       settingInstances[11]._textCbs[0]('old-name');
-      await settingInstances[11]._btnCbs[0]();
+      settingInstances[11]._btnCbs[0]();
+      await Promise.resolve(); await Promise.resolve();
       expect(plugin.migrateTagsProperty).toHaveBeenCalledWith('old-name', 'tags');
       vi.useRealTimers();
     });
@@ -308,7 +314,8 @@ describe('AttachmentsLibrarySettingsTab', () => {
       vi.useFakeTimers();
       const plugin = makePlugin();
       createTab(plugin);
-      await settingInstances[12]._btnCbs[0]();
+      settingInstances[12]._btnCbs[0]();
+      await Promise.resolve(); await Promise.resolve();
       expect(plugin.sanitizeSidecarTags).toHaveBeenCalled();
       vi.useRealTimers();
     });
