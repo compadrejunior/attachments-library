@@ -35,6 +35,18 @@ vi.mock('obsidian', () => {
   class Notice { constructor(_m: string) {} }
   const normalizePath = (p: string) => p.replace(/\\/g, '/').replace(/\/{2,}/g, '/');
 
+  class Modal {
+    contentEl: any = {
+      empty: () => {},
+      createEl: (_tag: string, _opts?: any) => ({}),
+    };
+    constructor(public app: any) {}
+    open() { (this as any).onOpen(); }
+    close() { (this as any).onClose(); }
+    onOpen() {}
+    onClose() {}
+  }
+
   class Setting {
     _textCbs: any[] = [];
     _toggleCbs: any[] = [];
@@ -80,7 +92,7 @@ vi.mock('obsidian', () => {
     }
   }
 
-  return { TAbstractFile, TFile, Plugin, PluginSettingTab, Notice, normalizePath, Setting };
+  return { TAbstractFile, TFile, Plugin, PluginSettingTab, Notice, normalizePath, Setting, Modal };
 });
 
 import { AttachmentsLibrarySettingsTab } from '../src/settings';
@@ -94,6 +106,15 @@ function makePlugin(overrides?: any) {
     migrateTagsProperty: vi.fn().mockResolvedValue(7),
     sanitizeSidecarTags: vi.fn().mockResolvedValue(4),
     moveBaseFile: vi.fn().mockResolvedValue(undefined),
+    getBaseFilePathFor: vi.fn().mockReturnValue('Attachments Library.base'),
+    app: {
+      vault: {
+        getFileByPath: vi.fn().mockReturnValue(null),
+      },
+      fileManager: {
+        trashFile: vi.fn().mockResolvedValue(undefined),
+      },
+    },
   };
 }
 
@@ -236,6 +257,74 @@ describe('AttachmentsLibrarySettingsTab', () => {
       settingInstances[5]._btnCbs[0]();
       await Promise.resolve(); await Promise.resolve();
       expect(plugin.moveBaseFile).toHaveBeenNthCalledWith(2, 'Databases', 'Archive');
+      vi.useRealTimers();
+    });
+  });
+
+  // ─── baseFolderPath move conflict ─────────────────────────────────────────
+  // The Modal mock calls onOpen() synchronously inside open(), so after the
+  // move button click the confirm modal's Setting is available immediately at
+  // settingInstances[18] (btn[0] = Replace, btn[1] = Cancel).
+
+  describe('baseFolderPath move conflict detection', () => {
+    it('skips the modal and proceeds when no file exists at destination', async () => {
+      vi.useFakeTimers();
+      const plugin = makePlugin({ baseFolderPath: '' });
+      plugin.app.vault.getFileByPath = vi.fn().mockReturnValue(null);
+      createTab(plugin);
+      settingInstances[5]._textCbs[0]('Databases');
+      settingInstances[5]._btnCbs[0]();
+      // No modal opened — settingInstances still has exactly 18 items
+      expect(settingInstances).toHaveLength(18);
+      await Promise.resolve(); await Promise.resolve();
+      expect(plugin.app.fileManager.trashFile).not.toHaveBeenCalled();
+      expect(plugin.moveBaseFile).toHaveBeenCalledWith('', 'Databases');
+      vi.useRealTimers();
+    });
+
+    it('opens a confirm modal when a file already exists at destination', () => {
+      const existingFile = { path: 'Databases/Attachments Library.base' };
+      const plugin = makePlugin({ baseFolderPath: '' });
+      plugin.app.vault.getFileByPath = vi.fn().mockReturnValue(existingFile);
+      createTab(plugin);
+      settingInstances[5]._textCbs[0]('Databases');
+      settingInstances[5]._btnCbs[0]();
+      // Modal opened synchronously — its Setting is at index 18
+      expect(settingInstances).toHaveLength(19);
+    });
+
+    it('aborts move when user clicks Cancel in the conflict modal', async () => {
+      const existingFile = { path: 'Databases/Attachments Library.base' };
+      const plugin = makePlugin({ baseFolderPath: '' });
+      plugin.app.vault.getFileByPath = vi.fn().mockReturnValue(existingFile);
+      createTab(plugin);
+      settingInstances[5]._textCbs[0]('Databases');
+      settingInstances[5]._btnCbs[0]();
+      // Click Cancel (btn[1])
+      settingInstances[18]._btnCbs[1]();
+      await Promise.resolve(); await Promise.resolve();
+      expect(plugin.app.fileManager.trashFile).not.toHaveBeenCalled();
+      expect(plugin.moveBaseFile).not.toHaveBeenCalled();
+    });
+
+    it('trashes existing file and proceeds when user clicks Replace in the conflict modal', async () => {
+      vi.useFakeTimers();
+      const existingFile = { path: 'Databases/Attachments Library.base' };
+      const plugin = makePlugin({ baseFolderPath: '' });
+      plugin.app.vault.getFileByPath = vi.fn().mockReturnValue(existingFile);
+      createTab(plugin);
+      settingInstances[5]._textCbs[0]('Databases');
+      settingInstances[5]._btnCbs[0]();
+      // Click Replace (btn[0]) — the async IIFE then needs 4 microtask ticks:
+      // 1) IIFE resumes from await openConfirmModal
+      // 2) await trashFile settles
+      // 3) await saveSettings settles
+      // 4) await moveBaseFile settles
+      settingInstances[18]._btnCbs[0]();
+      await Promise.resolve(); await Promise.resolve();
+      await Promise.resolve(); await Promise.resolve();
+      expect(plugin.app.fileManager.trashFile).toHaveBeenCalledWith(existingFile);
+      expect(plugin.moveBaseFile).toHaveBeenCalledWith('', 'Databases');
       vi.useRealTimers();
     });
   });

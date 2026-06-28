@@ -31,6 +31,30 @@ function makeApp(opts: {
 describe('BasesCreator', () => {
   const settings: AttachmentsLibrarySettings = { ...DEFAULT_SETTINGS };
 
+  // ─── getBaseFilePathForFolder ───────────────────────────────────────────────
+
+  describe('getBaseFilePathForFolder', () => {
+    it('returns root path for empty string', () => {
+      const creator = new BasesCreator({} as any, settings);
+      expect(creator.getBaseFilePathForFolder('')).toBe(BASE_NAME);
+    });
+
+    it('returns root path for whitespace string', () => {
+      const creator = new BasesCreator({} as any, settings);
+      expect(creator.getBaseFilePathForFolder('   ')).toBe(BASE_NAME);
+    });
+
+    it('returns folder-prefixed path when folder is provided', () => {
+      const creator = new BasesCreator({} as any, settings);
+      expect(creator.getBaseFilePathForFolder('Databases')).toBe(`Databases/${BASE_NAME}`);
+    });
+
+    it('normalizes nested folder path', () => {
+      const creator = new BasesCreator({} as any, settings);
+      expect(creator.getBaseFilePathForFolder('My/Nested/Folder')).toBe(`My/Nested/Folder/${BASE_NAME}`);
+    });
+  });
+
   // ─── getBaseFilePath ────────────────────────────────────────────────────────
 
   describe('getBaseFilePath', () => {
@@ -125,12 +149,13 @@ describe('BasesCreator', () => {
       expect(content).toContain('keywords:');
     });
 
-    it('base file content excludes .base files via filter', async () => {
+    it('base file content uses a single file.inFolder() filter without a .base exclusion', async () => {
       const app = makeApp();
       const creator = new BasesCreator(app as any, { ...settings, baseFolderPath: '' });
       await creator.createOrUpdateBaseFile();
       const content: string = (app.vault.create.mock.calls[0] as any[])[1];
-      expect(content).toContain('not(file.name.contains(".base"))');
+      expect(content).not.toContain('not(file.name.contains(".base"))');
+      expect(content).toContain('file.inFolder(');
     });
 
     it('base file content includes all expected views', async () => {
@@ -154,6 +179,53 @@ describe('BasesCreator', () => {
       expect(content).toContain('author:');
       expect(content).toContain('status:');
       expect(content).toContain('_fileType:');
+    });
+
+    it('base file content includes notes in the properties section', async () => {
+      const app = makeApp();
+      const creator = new BasesCreator(app as any, { ...settings, baseFolderPath: '' });
+      await creator.createOrUpdateBaseFile();
+      const content: string = (app.vault.create.mock.calls[0] as any[])[1];
+      expect(content).toContain('notes:');
+    });
+
+    it('each view order list contains all visible (non-underscore) fields', async () => {
+      const app = makeApp();
+      const creator = new BasesCreator(app as any, { ...settings, baseFolderPath: '' });
+      await creator.createOrUpdateBaseFile();
+      const content: string = (app.vault.create.mock.calls[0] as any[])[1];
+      const viewsSection = content.slice(content.indexOf('views:'));
+      for (const field of ['file.name', 'title', 'author', 'subject', 'genre', 'status', 'source', 'notes', 'created', 'updated']) {
+        expect(viewsSection).toContain(`- ${field}`);
+      }
+    });
+
+    it('order lists use the configured tagsPropertyName', async () => {
+      const app = makeApp();
+      const creator = new BasesCreator(app as any, { ...settings, tagsPropertyName: 'keywords', baseFolderPath: '' });
+      await creator.createOrUpdateBaseFile();
+      const content: string = (app.vault.create.mock.calls[0] as any[])[1];
+      const viewsSection = content.slice(content.indexOf('views:'));
+      expect(viewsSection).toContain('- keywords');
+    });
+
+    it('order lists do not include _fileType (underscore fields excluded from visible columns)', async () => {
+      const app = makeApp();
+      const creator = new BasesCreator(app as any, { ...settings, baseFolderPath: '' });
+      await creator.createOrUpdateBaseFile();
+      const content: string = (app.vault.create.mock.calls[0] as any[])[1];
+      const viewsSection = content.slice(content.indexOf('views:'));
+      // '_fileType\n' is an order list item; '_fileType.equals(...)' in filters is allowed
+      expect(viewsSection).not.toContain('- _fileType\n');
+    });
+
+    it('_fileType remains defined in the properties section for use by filters', async () => {
+      const app = makeApp();
+      const creator = new BasesCreator(app as any, { ...settings, baseFolderPath: '' });
+      await creator.createOrUpdateBaseFile();
+      const content: string = (app.vault.create.mock.calls[0] as any[])[1];
+      const propertiesSection = content.slice(content.indexOf('properties:'), content.indexOf('views:'));
+      expect(propertiesSection).toContain('_fileType:');
     });
   });
 

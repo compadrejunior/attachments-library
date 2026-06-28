@@ -31,7 +31,10 @@
       "desc": "Folder where \"Attachments Library.base\" will be created. Leave blank for vault root. After changing, click \"Move\" to move the existing file.",
       "placeholder": "Vault root",
       "moveBtn": "Move",
-      "movedBtn": "Moved!"
+      "movedBtn": "Moved!",
+      "conflictWarning": "A base file already exists at the destination. Replace it?",
+      "conflictConfirmBtn": "Replace",
+      "conflictCancelBtn": "Cancel"
     },
     "autoCreate": {
       "name": "Create note when file is added"
@@ -90,7 +93,8 @@
       "source": "Source",
       "createdAt": "Created",
       "updatedAt": "Updated",
-      "type": "Type"
+      "type": "Type",
+      "notes": "Notes"
     },
     "views": {
       "all": "All Attachments",

@@ -31,7 +31,10 @@
       "desc": "Pasta onde o arquivo \"Attachments Library.base\" será criado. Deixe em branco para a raiz do vault. Após alterar, clique em \"Mover\" para mover o arquivo existente.",
       "placeholder": "Raiz do vault",
       "moveBtn": "Mover",
-      "movedBtn": "Movido!"
+      "movedBtn": "Movido!",
+      "conflictWarning": "Já existe um arquivo base no destino. Deseja substituí-lo?",
+      "conflictConfirmBtn": "Substituir",
+      "conflictCancelBtn": "Cancelar"
     },
     "autoCreate": {
       "name": "Criar nota ao adicionar arquivo"
@@ -90,7 +93,8 @@
       "source": "Fonte",
       "createdAt": "Criado em",
       "updatedAt": "Atualizado em",
-      "type": "Tipo"
+      "type": "Tipo",
+      "notes": "Notas"
     },
     "views": {
       "all": "Todos os Anexos",

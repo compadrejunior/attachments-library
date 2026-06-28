@@ -8,10 +8,14 @@ export class BasesCreator {
     private settings: AttachmentsLibrarySettings
   ) {}
 
+  getBaseFilePathForFolder(folder: string): string {
+    const f = folder?.trim();
+    if (!f) return "Attachments Library.base";
+    return normalizePath(`${f}/Attachments Library.base`);
+  }
+
   getBaseFilePath(): string {
-    const folder = this.settings.baseFolderPath?.trim();
-    if (!folder) return "Attachments Library.base";
-    return normalizePath(`${folder}/Attachments Library.base`);
+    return this.getBaseFilePathForFolder(this.settings.baseFolderPath);
   }
 
   async createOrUpdateBaseFile(): Promise<void> {
@@ -51,11 +55,22 @@ export class BasesCreator {
 
   private buildBaseContent(): string {
     const tagsKey = this.settings.tagsPropertyName;
+    const orderList = [
+      "      - file.name",
+      "      - title",
+      "      - author",
+      "      - subject",
+      "      - genre",
+      "      - status",
+      `      - ${tagsKey}`,
+      "      - source",
+      "      - notes",
+      "      - created",
+      "      - updated",
+    ].join('\n');
     return [
       "filters:",
-      `  and:`,
-      `    - file.inFolder("${this.settings.libraryFolder}")`,
-      `    - not(file.name.contains(".base"))`,
+      `  file.inFolder("${this.settings.libraryFolder}")`,
       "",
       "properties:",
       `  attachment:`,
@@ -74,6 +89,8 @@ export class BasesCreator {
       `    displayName: "${t('bases.columns.tags')}"`,
       `  source:`,
       `    displayName: "${t('bases.columns.source')}"`,
+      `  notes:`,
+      `    displayName: "${t('bases.columns.notes')}"`,
       `  created:`,
       `    displayName: "${t('bases.columns.createdAt')}"`,
       `  updated:`,
@@ -85,13 +102,15 @@ export class BasesCreator {
       `  - type: table`,
       `    name: "${t('bases.views.all')}"`,
       `    order:`,
-      `      - title`,
+      orderList,
       `    sort:`,
       `      - property: title`,
       `        direction: ASC`,
       "",
       `  - type: table`,
       `    name: "${t('bases.views.unread')}"`,
+      `    order:`,
+      orderList,
       `    filters:`,
       `      and:`,
       `        - status.equals("unread")`,
@@ -101,12 +120,16 @@ export class BasesCreator {
       "",
       `  - type: table`,
       `    name: "${t('bases.views.reading')}"`,
+      `    order:`,
+      orderList,
       `    filters:`,
       `      and:`,
       `        - status.equals("reading")`,
       "",
       `  - type: table`,
       `    name: "${t('bases.views.pdfsOnly')}"`,
+      `    order:`,
+      orderList,
       `    filters:`,
       `      and:`,
       `        - _fileType.equals("pdf")`,

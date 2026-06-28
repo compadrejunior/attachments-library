@@ -115,6 +115,10 @@ export default class AttachmentsLibraryPlugin extends Plugin {
     await this.backfillManager.runBackfill();
   }
 
+  getBaseFilePathFor(folder: string): string {
+    return this.basesCreator.getBaseFilePathForFolder(folder);
+  }
+
   async moveBaseFile(oldFolder: string, newFolder: string): Promise<void> {
     await this.basesCreator.moveBaseFile(oldFolder, newFolder);
   }

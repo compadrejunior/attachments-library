@@ -1,6 +1,27 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, Modal, PluginSettingTab, Setting } from 'obsidian';
 import type AttachmentsLibraryPlugin from './main';
 import { t } from './i18n/i18n';
+
+function openConfirmModal(app: App, message: string, confirmText: string, cancelText: string): Promise<boolean> {
+  return new Promise(resolve => {
+    let answered = false;
+    class ConfirmModal extends Modal {
+      onOpen(): void {
+        this.contentEl.createEl('p', { text: message });
+        new Setting(this.contentEl)
+          .addButton(btn => btn.setButtonText(confirmText).setCta()
+            .onClick(() => { answered = true; resolve(true); this.close(); }))
+          .addButton(btn => btn.setButtonText(cancelText)
+            .onClick(() => { answered = true; resolve(false); this.close(); }));
+      }
+      onClose(): void {
+        this.contentEl.empty();
+        if (!answered) resolve(false);
+      }
+    }
+    new ConfirmModal(app).open();
+  });
+}
 
 export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
   constructor(app: App, private plugin: AttachmentsLibraryPlugin) {
@@ -61,6 +82,18 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         .onClick(() => { void (async () => {
           const oldFolder = baseFolderMoveFrom;
           const newFolder = baseFolderPending;
+          const destPath = this.plugin.getBaseFilePathFor(newFolder);
+          const destFile = this.plugin.app.vault.getFileByPath(destPath);
+          if (destFile) {
+            const confirmed = await openConfirmModal(
+              this.plugin.app,
+              t('settings.baseFolder.conflictWarning'),
+              t('settings.baseFolder.conflictConfirmBtn'),
+              t('settings.baseFolder.conflictCancelBtn'),
+            );
+            if (!confirmed) return;
+            await this.plugin.app.fileManager.trashFile(destFile);
+          }
           this.plugin.settings.baseFolderPath = newFolder;
           await this.plugin.saveSettings();
           await this.plugin.moveBaseFile(oldFolder, newFolder);
