@@ -48,6 +48,7 @@ function makeApp(options: {
         cb({});
       }),
       renameFile: vi.fn().mockResolvedValue(undefined),
+      trashFile: vi.fn().mockResolvedValue(undefined),
     },
   };
   return app;
@@ -337,14 +338,14 @@ describe('SidecarManager', () => {
       const app = makeApp({ sidecarExists: false });
       const sm = new SidecarManager(app as any, defaults);
       await sm.deleteSidecar('Attachments/file.pdf');
-      expect(app.vault.trash).not.toHaveBeenCalled();
+      expect(app.fileManager.trashFile).not.toHaveBeenCalled();
     });
 
     it('trashes sidecar when it exists', async () => {
       const app = makeApp({ sidecarExists: true });
       const sm = new SidecarManager(app as any, defaults);
       await sm.deleteSidecar('Attachments/file.pdf');
-      expect(app.vault.trash).toHaveBeenCalledWith(expect.anything(), true);
+      expect(app.fileManager.trashFile).toHaveBeenCalledWith(expect.anything());
     });
   });
 

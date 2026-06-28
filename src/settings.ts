@@ -58,7 +58,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         .onChange(value => { baseFolderPending = value.trim(); }))
       .addButton(btn => btn
         .setButtonText(t('settings.baseFolder.moveBtn'))
-        .onClick(() => { void (async () => {
+        .onClick(async () => {
           const oldFolder = baseFolderMoveFrom;
           const newFolder = baseFolderPending;
           this.plugin.settings.baseFolderPath = newFolder;
@@ -67,7 +67,7 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
           baseFolderMoveFrom = newFolder;
           btn.setButtonText(t('settings.baseFolder.movedBtn'));
           window.setTimeout(() => btn.setButtonText(t('settings.baseFolder.moveBtn')), 3000);
-        })(); }));
+        }));
 
     new Setting(containerEl).setName(t('settings.sections.behavior')).setHeading();
 
@@ -112,24 +112,24 @@ export class AttachmentsLibrarySettingsTab extends PluginSettingTab {
         .onChange(value => { migrateFromInput = value.trim(); }))
       .addButton(btn => btn
         .setButtonText(t('settings.migrateTags.renameBtn'))
-        .onClick(() => { void (async () => {
+        .onClick(async () => {
           if (!migrateFromInput) return;
           const newName = this.plugin.settings.tagsPropertyName;
           const count = await this.plugin.migrateTagsProperty(migrateFromInput, newName);
           btn.setButtonText(t('settings.migrateTags.doneBtn', { count }));
           window.setTimeout(() => btn.setButtonText(t('settings.migrateTags.renameBtn')), 4000);
-        })(); }));
+        }));
 
     new Setting(containerEl)
       .setName(t('settings.sanitizeTags.name'))
       .setDesc(t('settings.sanitizeTags.desc'))
       .addButton(btn => btn
         .setButtonText(t('settings.sanitizeTags.btn'))
-        .onClick(() => { void (async () => {
+        .onClick(async () => {
           const count = await this.plugin.sanitizeSidecarTags();
           btn.setButtonText(t('settings.sanitizeTags.doneBtn', { count }));
           window.setTimeout(() => btn.setButtonText(t('settings.sanitizeTags.btn')), 4000);
-        })(); }));
+        }));
 
     new Setting(containerEl).setName(t('settings.sections.pdfMetadata')).setHeading();
 

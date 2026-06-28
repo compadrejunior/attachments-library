@@ -16,4 +16,4 @@ export async function initI18n(): Promise<void> {
 }
 
 export const t = (key: string, options?: Record<string, unknown>): string =>
-  i18next.t(key, options) as string;
+  i18next.t(key, options);
