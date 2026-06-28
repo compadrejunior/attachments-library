@@ -1,6 +1,6 @@
 {
   "name": "attachments-library",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Automatically indexes Attachments folder with metadata sidecar notes",
   "author": "José Compadre Junior",
   "main": "main.js",
