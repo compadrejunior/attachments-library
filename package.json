@@ -24,7 +24,7 @@
     "tslib": "2.4.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.62.0",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "i18next": "^26.3.3",
